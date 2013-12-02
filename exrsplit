@@ -1,0 +1,112 @@
+#!/usr/bin/python
+# Python script to convert a multi-layer exr image into many exr or png images
+import OpenEXR
+from sys import argv
+from copy import deepcopy
+from subprocess import Popen
+
+def usage():
+	print (	'Usage: exrsplit [options] file\n'
+			'Options:\n'
+			'\t-exr\t\tConvert a multi-layer exr file into multiple exr files (default).\n'
+			'\t-png\t\tConvert a multi-layer exr file into multiple png files.\n'
+			'\t-m\t\tMerge channels (default)\n'
+			'\t-s\t\tSplit channels\n'
+			'\t-v\t\tVerbose mode\n'
+			'See "man exrsplit" for more information.')
+	exit(1)
+
+def exr_to_png(image):
+	if verbose:
+		print '\tConverting to png'
+	Popen('convert ' + image + '.exr ' + image + '.png && rm ' + image + '.exr', shell=True)
+
+if len(argv) == 1:
+	usage()
+
+output_format = 0	# 0 = exr, 1 = png
+verbose = False
+merge = True		# merge channels from the same layer in a single image
+
+
+for arg in argv[1:-1]:
+	if arg == '-exr':
+		output_format = 0
+	elif arg == '-png':
+		output_format = 1
+	elif arg == '-m':
+		merge = True
+	elif arg == '-s':
+		merge = False
+	elif arg == '-v':
+		verbose = True
+	else:
+		print 'Unknown option: ' + arg
+		usage()
+
+
+if OpenEXR.isOpenExrFile(argv[-1]) == False:
+	print "Invalid EXR image"
+	exit(1)
+
+exr_file = OpenEXR.InputFile(argv[-1])
+if exr_file.isComplete == False:
+	print "Exr file isn't complete (corrupted or some program is still writing to the file?)"
+	exit(1)
+
+header = exr_file.header()
+
+if verbose:
+	print 'Channels from input file:'
+	print header['channels']
+
+out_header = deepcopy(header)
+if merge:
+	# The loop here goes through each channel from the original file and separates each layer
+	# in a dictionary.
+	# Blender names the channels as <layer name>.<color channel> (eg. RenderLayer.Combined.r).
+	# The search is required since the layers aren't kept in sorted sequence
+	outfiles = {}	# the dictionary keeps each layer as a key with the channels as a list
+	for layer in header['channels']:
+		if verbose:
+			print 'Got layer ' + layer
+		if layer[:-2] in outfiles:
+			# dict key exists, let's add this channel (last letter) to the layer
+			outfiles[layer[:-2]].append(layer[-1])
+		else:
+			outfiles[layer[:-2]] = [layer[-1]]		# dict key is new (first channel from this layer)
+	if verbose:
+		print 'Layers to be split:'
+		print outfiles
+		totalfiles = len(outfiles)
+		i = 1
+	for layer in outfiles:
+		del out_header['channels']
+		out_header['channels'] = {}
+		out_pixel_formats = {}
+		for channel in outfiles[layer]:
+			# For each channel, let's copy the same channel format from the original layer:
+			out_header['channels'][channel] = header['channels'][layer + '.' + channel]
+			out_pixel_formats[channel] = exr_file.channel(layer + '.' + channel)
+		if verbose:
+			print str(i) + '/' + str(totalfiles) + '\tGenerating ' + layer + '.exr with channels ' + str(out_header['channels'].keys())
+			i += 1
+		output = OpenEXR.OutputFile(layer + '.exr', out_header)
+		output.writePixels(out_pixel_formats)
+		if output_format == 1:
+			exr_to_png(layer)
+else:
+	if verbose:
+		totalfiles = len(header['channels'])
+		i = 1
+	for layer in header['channels']:
+		if verbose:
+			print str(i) + '/' + str(totalfiles) + '\tGenerating ' + layer + '.exr'
+			i += 1
+ 		del out_header['channels']
+ 		# Save one single channel with the channel color value and the same pixel format:
+		out_header['channels'] = {layer[-1]: header['channels'][layer]}
+		output = OpenEXR.OutputFile(layer + '.exr', out_header)
+		output.writePixels({layer[-1]: exr_file.channel(layer)})
+		if output_format == 1:
+			exr_to_png(layer)
