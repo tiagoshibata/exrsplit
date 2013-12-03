@@ -8,4 +8,9 @@ and the program supports conversion to png using imagemagick.
 
 To use the program, install the development packages for OpenEXR, the python interface and imagemagick.
 In Ubuntu, the packages libopenexr-dev, python, python-setuptools and imagemagick should make it.
-Then the python interface with "easy_install -U openexr".
+Then install the python interface with "easy_install -U openexr".
+
+The program was designed to work with Blender EXR output and tested with them, but should work with
+files from other programs, too. If you find bugs, add an issue in github :)
+
+Future plans: rewrite in C++ with multi-core conversion of the images.
