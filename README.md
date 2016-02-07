@@ -12,6 +12,9 @@ Usage
 -----
 
 ### 1. Setting up on Mac OSX
+
+Thanks [jakecoppinger](https://github.com/jakecoppinger) for Mac instructions.
+
 Install Homebrew:
 `ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
 
@@ -34,7 +37,12 @@ Install the development packages for OpenEXR, the python bindings and imagemagic
 
 In Ubuntu, the packages libopenexr-dev, python, python-setuptools and imagemagick should make it: `sudo apt-get install libopenexr-dev python python-setuptools imagemagick`.
 
-The python bindings can be installed with `easy_install -U openexr`.
+The Python bindings can be installed with `easy_install -U openexr`.
+
+Bugs
+-----
+* The Python binding has issues with luminance Y RY BY encoding with sampling rates different to 2.
+* Imagemagick crashes with some EXR images. Calling an external program isn't the best solution and I should be using something like [passing OpenEXR data to Python Imaging Library](http://excamera.com/articles/26/doc/intro.html) to get the work done.
 
 Author
 ------
