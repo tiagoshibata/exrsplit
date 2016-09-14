@@ -2,11 +2,23 @@ exrsplit
 ========
 > Split a multi-layer exr image into multiple files
 
-About .exr
+About OpenEXR
 -----
-.exr files are very useful, with a high compression, support for high quality and multiple layers. However, many programs don't support loading multi-layer, only files with the standard 3 or 4 color channels. This program uses the OpenEXR Python implementation to split a multi-layer exr image into many exr images. The output may be either single channel (with 3-4 images for each layer) or RGB/RGBA and the program supports conversion to png using imagemagick. Some nonstandard naming schemes are also detected and handled.
+OpenEXR is an advanced image format supporting high dynamic range (including floating point up to 64 bits wide), multiple layers (required for depth data or stereo images) and lossless or lossy compression. However, many programs don't support loading multi-layer files, only files with the standard 3 or 4 color channels.
 
-The program was designed to work with Blender EXR output and tested with them, but should work with files from other programs, too. If you find bugs, add an issue in GitHub :)
+This program uses the OpenEXR Python implementation to split a multi-layer exr image into many exr images. The output may be either single channel (with 3-4 images for each layer) or RGB/RGBA. Conversion to PNG is supported using imagemagick (note, however, that the high dynamic range is lost when mapped to 24-bit colors). Some nonstandard naming schemes are also detected and handled.
+
+All layer names cited in the [documentation](http://www.openexr.com/documentation.html) are supported:
+
+```
+R, G, B, A, red, green, blue, alpha, Z, ZBack, AR, AG, AB, X, Y, depth, data, shadows, mask, RY, GY, BY, U, V
+```
+
+Layers with unknown names are split to a separate file with a single data channel.
+
+The program was primarily designed to work with Blender EXR output. It is tested against Blender output and automatically tested against the [OpenEXR collection of images](https://github.com/openexr/openexr-images) with [Travis CI](https://travis-ci.org/). It should work with any valid OpenEXR image.
+
+If you find bugs or have a feature request, read [REPORTING.md](REPORTING.md).
 
 Usage
 -----

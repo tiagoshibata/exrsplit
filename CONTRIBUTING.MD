@@ -1,0 +1,1 @@
+If you wish to contribute code, fork this repository and do a pull request to a separate branch. Pull requests for new features should have an associated issue opened, so that ideas can be discussed beforehand. Code is under the MIT License, reproduced in [LICENCE.md](LICENCE.md).
