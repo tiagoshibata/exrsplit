@@ -27,41 +27,41 @@ import OpenEXR
 import sys
 
 if len(sys.argv) == 1:
-	print(	'Usage: exrdump [-a] file.exr [file2.exr ...]\n'
-			'\t-a\t\tDisplay all header information')
+    print('Usage: exrdump [-a] file.exr [file2.exr ...]\n'
+          '\t-a\t\tDisplay all header information')
 
 display_header = sys.argv[1] == '-a'
 if display_header:
-	exr_files = sys.argv[2:]
+    exr_files = sys.argv[2:]
 else:
-	exr_files = sys.argv[1:]
+    exr_files = sys.argv[1:]
 
 for exr_filename in exr_files:
-	print('%s:' % (exr_filename))
-	if OpenEXR.isOpenExrFile(exr_filename) == False:
-		print("Invalid EXR image")
-		exit(1)
+    print('%s:' % (exr_filename))
+    if not OpenEXR.isOpenExrFile(exr_filename):
+        print("Invalid EXR image")
+        exit(1)
 
-	exr_file = OpenEXR.InputFile(exr_filename)
-	if not exr_file.isComplete:
-		print("Exr file isn't complete (corrupted or some program is still writing to the file?)")
-		exit(1)
+    exr_file = OpenEXR.InputFile(exr_filename)
+    if not exr_file.isComplete:
+        print("Exr file isn't complete (corrupted or some program is still writing to the file?)")
+        exit(1)
 
-	exr_header = exr_file.header()
+    exr_header = exr_file.header()
 
-	if display_header:
-		for key, value in exr_header.items():
-			print('%s - %s' % (key, value))
+    if display_header:
+        for key, value in exr_header.items():
+            print('%s - %s' % (key, value))
 
-	print('Channels:')
+    print('Channels:')
 
-	for channel_name, channel_type in exr_header['channels'].items():
-		print('%s - %s' % (channel_name, channel_type))
+    for channel_name, channel_type in exr_header['channels'].items():
+        print('%s - %s' % (channel_name, channel_type))
 
-	if 'multiView' in exr_header:
-		print('multiView data:')
-		print(exr_header['multiView'])
-	else:
-		print('No multiView data')
+    if 'multiView' in exr_header:
+        print('multiView data:')
+        print(exr_header['multiView'])
+    else:
+        print('No multiView data')
 
-	exr_file.close()
+    exr_file.close()
