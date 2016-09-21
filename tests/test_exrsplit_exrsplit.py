@@ -74,8 +74,8 @@ def test_EXRChannel(header, fullname, expected_channel):
 
 @pytest.mark.parametrize('channel,expected_file_name', [
     (exrsplit.EXRChannel({'multiView': ['left', 'right']}, 'car.G'), 'left.car'),
-    (exrsplit.EXRChannel({}, 'window.depth'), 'window.depth'),
-    (exrsplit.EXRChannel({'multiView': ['left', 'right']}, 'right.window.depth'), 'right.window.depth'),
+    (exrsplit.EXRChannel({}, 'window.depth'), 'window'),
+    (exrsplit.EXRChannel({'multiView': ['left', 'right']}, 'right.window.depth'), 'right.window'),
 ])
 def test_output_file_name(channel, expected_file_name):
     assert exrsplit.output_file_name(channel) == expected_file_name
@@ -93,7 +93,7 @@ def test_output_file_name(channel, expected_file_name):
         exrsplit.EXRChannel({}, 'car.R'),
     ], [{'car.R'}, {'car.window.G'}, {'window.G'}]),
 ])
-def test_group_color_channels(channels, expected_groups):
-    groups = exrsplit.group_color_channels(channels)
+def test_group_channels(channels, expected_groups):
+    groups = exrsplit.group_channels(channels)
     for group, expected_group in itertools.izip_longest(groups, expected_groups):
         assert {'{}.{}'.format(exrsplit.output_file_name(x), x.channel) for x in group} == expected_group

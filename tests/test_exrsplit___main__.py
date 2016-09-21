@@ -7,6 +7,7 @@ CmdArgs = collections.namedtuple('CmdArgs', ['png', 'split_channels', 'merge', '
 
 @pytest.mark.parametrize('flags', [
     (CmdArgs(png=False, split_channels=False, merge=True, image=['a', 'b'])),
+    (CmdArgs(png=False, split_channels=True, merge=True, image=['a', 'b', 'c'])),
 ])
 def test_incompatible_flags(flags):
     with pytest.raises(SystemExit):

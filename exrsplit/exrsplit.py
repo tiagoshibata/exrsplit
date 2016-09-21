@@ -102,6 +102,7 @@ class EXRChannel:
         sublayers names or None if in the default layer. channel_type contains R,
         G, B, A or DATA.
         """
+        self.fullname = fullname
         self.view = _get_view(header, fullname)
         self.layer = _get_layer(self.view, fullname)
         self.channel = fullname.rsplit('.', 1)[-1]
@@ -111,12 +112,10 @@ class EXRChannel:
 def output_file_name(channel):
     """Build name of output file for a given channel."""
     components = '.'.join([x for x in (channel.view, channel.layer) if x is not None])
-    if channel.channel_type == 'DATA':
-        components = '{}.{}'.format(components, channel.channel)
     return components
 
 
-def group_color_channels(channels):
-    """Group color channels belonging to the same layer, which will be saved to the same output file."""
+def group_channels(channels):
+    """Group channels belonging to the same layer."""
     channels = sorted(channels, key=output_file_name)
     return [list(channel_group) for _, channel_group in itertools.groupby(channels, key=output_file_name)]
