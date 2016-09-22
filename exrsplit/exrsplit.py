@@ -112,7 +112,7 @@ class EXRChannel:
 def output_file_name(channel):
     """Build name of output file for a given channel."""
     components = '.'.join([x for x in (channel.view, channel.layer) if x is not None])
-    return components
+    return components or 'default_layer'
 
 
 def group_channels(channels):

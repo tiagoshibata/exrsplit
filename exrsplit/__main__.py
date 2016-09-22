@@ -58,9 +58,13 @@ def merge_exr(args):
     output_header = _create_output_header(exr.header())
     exr.close()
     views = args.view or []
-    print('Views {}'.format(views))
-    if views:
+    if len(views) > 1:
+        print('Using views {}'.format(', '.join(views)))
         output_header['multiView'] = views
+    elif len(views) == 1:
+        print('Using view {}'.format(views[0]))
+        output_header['view'] = views[0]
+        views = []
 
     channel_data = {}
     for i, inputfile in enumerate(args.image[:-1]):
@@ -68,6 +72,8 @@ def merge_exr(args):
         exr = _open_inputfile(inputfile)
         header = exr.header()
         layers = os.path.basename(inputfile).split('.')[:-1]  # Split components and remove extension
+        if layers[0] == 'default_layer':
+            layers = layers[1:]
         if views:
             if layers[0] in views:
                 if layers[0] == views[0]:
