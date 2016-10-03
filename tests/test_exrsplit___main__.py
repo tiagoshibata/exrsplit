@@ -1,9 +1,7 @@
-import collections
 import exrsplit.__main__ as exrsplit_main
 from mock import ANY, call, patch, MagicMock
 import pytest
-
-CmdArgs = collections.namedtuple('CmdArgs', ['png', 'split_channels', 'merge', 'image'])
+from cmdargs import CmdArgs
 
 
 @pytest.mark.parametrize('flags', [
