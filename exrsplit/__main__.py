@@ -27,9 +27,7 @@ def _open_inputfile(filename):
         raise SystemExit(1)
     exr_file = OpenEXR.InputFile(filename)
     if not exr_file.isComplete():
-        print("File is incomplete (corrupted or still being written).")
-        exr_file.close()
-        raise SystemExit(1)
+        print("WARNING: File seems incomplete (corrupted or still being written).")
     return exr_file
 
 
