@@ -1,0 +1,1 @@
+-e git+https://github.com/tiagoshibata/openexrpython.git@449dd1650e3bedeb4f025ef46692eba37284061d#egg=OpenEXR
