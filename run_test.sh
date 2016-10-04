@@ -1,16 +1,9 @@
 #!/bin/bash
 set -e
-cd "$(dirname "$0")"
-PYTHONPATH=$(pwd)
-export PYTHONPATH
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-if [ $TRAVIS ] ; then
-    PYTHON_VERSIONS=python
-else
-    PYTHON_VERSIONS='python2 python3'
-fi
-
-for PYTHON in $PYTHON_VERSIONS ; do
-    $PYTHON -m flake8 exrsplit/
-    $PYTHON -m pytest "$@"  # additional options are passed to pytest
+for PYTHON in python2 python3 ; do
+    echo ------------------------------------------------
+    echo Testing with $PYTHON...
+    $PYTHON "$SCRIPT_DIR/setup.py" test
 done

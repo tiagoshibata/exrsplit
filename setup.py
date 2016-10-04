@@ -48,9 +48,11 @@ setup(
     # dependencies). You can install these using the following syntax,
     # for example:
     # $ pip install -e .[dev,test]
-    extras_require={
-        'test': ['flake8', 'pytest', 'pytest-cov', 'pytest-xdist'],
-    },
+    extras_require={},
+
+    setup_requires=['pytest-runner'],
+
+    tests_require=['flake8', 'mock', 'pytest', 'pytest-flake8', 'pytest-cov', 'pytest-xdist'],
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.

@@ -9,6 +9,5 @@ python:
   - "pypy"
 install:
   - pip install -r requirements.txt
-  - pip install .[test]
-script: ./run_test.sh
+script: python setup.py test
 sudo: false
