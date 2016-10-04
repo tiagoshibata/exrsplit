@@ -1,19 +1,24 @@
 import collections
 import exrsplit.exrsplit as exrsplit
-import itertools
 import pytest
+import sys
+
+if sys.version_info < (3, 0):
+    from itertools import izip_longest as zip_longest
+else:
+    from itertools import zip_longest
 
 
 @pytest.mark.parametrize('header,fullname,expected_view', [
     ({}, '', None),
-    ({'view': 'camera'}, 'R', 'camera'),
-    ({'multiView': ['left', 'right']}, 'R', 'left'),
-    ({'multiView': ['left', 'right']}, 'car.R', 'left'),
-    ({'multiView': ['left', 'right']}, 'right.B', 'right'),
-    ({'multiView': ['left', 'right']}, 'right.window.R', 'right'),
+    ({'view': b'camera'}, 'R', b'camera'),
+    ({'multiView': [b'left', b'right']}, 'R', b'left'),
+    ({'multiView': [b'left', b'right']}, 'car.R', b'left'),
+    ({'multiView': [b'left', b'right']}, 'right.B', b'right'),
+    ({'multiView': [b'left', b'right']}, 'right.window.R', b'right'),
 ])
-def test__get_view(header, fullname, expected_view):
-    assert exrsplit._get_view(header, fullname) == expected_view
+def test_get_view(header, fullname, expected_view):
+    assert exrsplit.get_view(header, fullname) == expected_view
 
 
 @pytest.mark.parametrize('view,fullname,expected_layer', [
@@ -21,10 +26,10 @@ def test__get_view(header, fullname, expected_view):
     (None, 'car.R', 'car'),
     (None, 'window.B', 'window'),
     (None, 'car.window.R', 'car.window'),
-    ('left', 'R', None),
-    ('left', 'right.R', 'right'),
-    ('right', 'right.R', None),
-    ('right', 'right.car.R', 'car'),
+    (b'left', 'R', None),
+    (b'left', 'right.R', 'right'),
+    (b'right', 'right.R', None),
+    (b'right', 'right.car.R', 'car'),
 ])
 def test__get_layer(view, fullname, expected_layer):
     assert exrsplit._get_layer(view, fullname) == expected_layer
@@ -46,24 +51,24 @@ ChannelData = collections.namedtuple('ChannelData', ['view', 'layer', 'channel',
 
 @pytest.mark.parametrize('header,fullname,expected_channel', [
     (
-        {'multiView': ['left', 'right']},
+        {'multiView': [b'left', b'right']},
         'R',
-        ChannelData(view='left', layer=None, channel='R', channel_type='R'),
+        ChannelData(view=b'left', layer=None, channel='R', channel_type='R'),
     ),
     (
-        {'multiView': ['left', 'right']},
+        {'multiView': [b'left', b'right']},
         'car.R',
-        ChannelData(view='left', layer='car', channel='R', channel_type='R'),
+        ChannelData(view=b'left', layer='car', channel='R', channel_type='R'),
     ),
     (
-        {'multiView': ['left', 'right']},
+        {'multiView': [b'left', b'right']},
         'right.B',
-        ChannelData(view='right', layer=None, channel='B', channel_type='B'),
+        ChannelData(view=b'right', layer=None, channel='B', channel_type='B'),
     ),
     (
-        {'multiView': ['left', 'right']},
+        {'multiView': [b'left', b'right']},
         'right.window.depth',
-        ChannelData(view='right', layer='window', channel='depth', channel_type='DATA'),
+        ChannelData(view=b'right', layer='window', channel='depth', channel_type='DATA'),
     ),
 ])
 def test_EXRChannel(header, fullname, expected_channel):
@@ -73,9 +78,9 @@ def test_EXRChannel(header, fullname, expected_channel):
 
 
 @pytest.mark.parametrize('channel,expected_file_name', [
-    (exrsplit.EXRChannel({'multiView': ['left', 'right']}, 'car.G'), 'left.car'),
+    (exrsplit.EXRChannel({'multiView': [b'left', b'right']}, 'car.G'), 'left.car'),
     (exrsplit.EXRChannel({}, 'window.depth'), 'window'),
-    (exrsplit.EXRChannel({'multiView': ['left', 'right']}, 'right.window.depth'), 'right.window'),
+    (exrsplit.EXRChannel({'multiView': [b'left', b'right']}, 'right.window.depth'), 'right.window'),
 ])
 def test_output_file_name(channel, expected_file_name):
     assert exrsplit.output_file_name(channel) == expected_file_name
@@ -83,9 +88,9 @@ def test_output_file_name(channel, expected_file_name):
 
 @pytest.mark.parametrize('channels,expected_groups', [
     ([
-        exrsplit.EXRChannel({'multiView': ['left', 'right']}, 'car.G'),
-        exrsplit.EXRChannel({'multiView': ['left', 'right']}, 'window.G'),
-        exrsplit.EXRChannel({'multiView': ['left', 'right']}, 'car.R'),
+        exrsplit.EXRChannel({'multiView': [b'left', b'right']}, 'car.G'),
+        exrsplit.EXRChannel({'multiView': [b'left', b'right']}, 'window.G'),
+        exrsplit.EXRChannel({'multiView': [b'left', b'right']}, 'car.R'),
     ], [{'left.car.G', 'left.car.R'}, {'left.window.G'}]),
     ([
         exrsplit.EXRChannel({}, 'car.window.G'),
@@ -95,5 +100,5 @@ def test_output_file_name(channel, expected_file_name):
 ])
 def test_group_channels(channels, expected_groups):
     groups = exrsplit.group_channels(channels)
-    for group, expected_group in itertools.izip_longest(groups, expected_groups):
+    for group, expected_group in zip_longest(groups, expected_groups):
         assert {'{}.{}'.format(exrsplit.output_file_name(x), x.channel) for x in group} == expected_group

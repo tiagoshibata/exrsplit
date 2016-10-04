@@ -40,11 +40,38 @@ def _create_output_header(header):
     header['channels'] = {}
     header.pop('view', None)
     header.pop('multiView', None)
-    comment = 'Processed by exrsplit'
+    comment = b'Processed by exrsplit'
     prev_comment = header.setdefault('comments', comment)
     if prev_comment is not None and comment not in prev_comment:
-        header['comments'] = '{} - {}'.format(prev_comment, comment)
+        header['comments'] = prev_comment + b' - ' + comment
     return header
+
+
+def _exr_to_multilayer(merged_header, merged_data, filename):
+    """Load an EXR file and rename channels to store in a multi-layer file (for merging)."""
+    exr = _open_inputfile(filename)
+    try:
+        header = exr.header()
+        components = os.path.basename(filename).split('.')[:-1]  # Split components and remove extension
+        if components[0] == 'default_layer':
+            components = components[1:]
+        layer = '.'.join(components)
+
+        views = merged_header.get('view') or merged_header.get('multiView')
+        if views:
+            view = exrsplit.get_view(merged_header, layer)
+            if components[0] == view:
+                layer = layer.split('.', 1)[1]
+            else:
+                print('{} first component is {}, which is not a valid view.'.format(filename, components[0]))
+                print('Putting in default view {}.'.format(views[0]))
+
+        for channel in header['channels']:
+            fullname = layer and '{}.{}'.format(layer, channel) or channel
+            merged_data[fullname] = exr.channel(channel)
+            merged_header['channels'][fullname] = header['channels'][channel]
+    finally:
+        exr.close()
 
 
 def merge_exr(args):
@@ -62,28 +89,11 @@ def merge_exr(args):
     elif len(views) == 1:
         print('Using view {}'.format(views[0]))
         output_header['view'] = views[0]
-        views = []
 
     channel_data = {}
-    for i, inputfile in enumerate(args.image[:-1]):
-        print('{}/{} - Merging {}'.format(i + 1, len(args.image) - 1, inputfile))
-        exr = _open_inputfile(inputfile)
-        header = exr.header()
-        layers = os.path.basename(inputfile).split('.')[:-1]  # Split components and remove extension
-        if layers[0] == 'default_layer':
-            layers = layers[1:]
-        if views:
-            if layers[0] in views:
-                if layers[0] == views[0]:
-                    layers = layers[1:]
-            else:
-                print('{} first component is {}, which is not a valid view.'.format(inputfile, layers[0]))
-                print('Putting in default view {}.'.format(views[0]))
-        layer = '.'.join(layers)
-        for channel in header['channels']:
-            layer_fullname = layer and '{}.{}'.format(layer, channel) or channel
-            channel_data[layer_fullname] = exr.channel(channel)
-            output_header['channels'][layer_fullname] = header['channels'][channel]
+    for i, filename in enumerate(args.image[:-1]):
+        print('{}/{} - Merging {}'.format(i + 1, len(args.image) - 1, filename))
+        _exr_to_multilayer(output_header, channel_data, filename)
 
     output = OpenEXR.OutputFile(args.image[-1], output_header)
     try:

@@ -15,11 +15,11 @@ def test_incompatible_flags(flags):
 
 @pytest.mark.parametrize('header,expected_header', [
     (
-        {'view': 'camera', 'moreData': 'someData', 'channels': {'R': '0123'}},
-        {'comments': 'Processed by exrsplit', 'moreData': 'someData', 'channels': {}},
+        {'view': b'camera', 'moreData': b'someData', 'channels': {'R': '0123'}},
+        {'comments': b'Processed by exrsplit', 'moreData': b'someData', 'channels': {}},
     ), (
-        {'multiView': ['camera', 'upper'], 'comments': 'Some comment'},
-        {'comments': 'Some comment - Processed by exrsplit', 'channels': {}},
+        {'multiView': ['camera', 'upper'], 'comments': b'Some comment'},
+        {'comments': b'Some comment - Processed by exrsplit', 'channels': {}},
     ),
 ])
 def test__create_output_header(header, expected_header):
@@ -39,13 +39,13 @@ def test_split_exr_layers(mock___open_inputfile, mock_OpenEXR_OutputFile):
     mock_OpenEXR_OutputFile.assert_has_calls([
         call('car.exr', {
             'channels': {'R': {}},
-            'comments': 'Processed by exrsplit',
+            'comments': b'Processed by exrsplit',
         }),
         call().writePixels(ANY),
         call().close(),
         call('default_layer.exr', {
             'channels': {'R': {}, 'G': {}},
-            'comments': 'Processed by exrsplit',
+            'comments': b'Processed by exrsplit',
         }),
         call().writePixels(ANY),
         call().close(),

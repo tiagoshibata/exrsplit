@@ -54,7 +54,7 @@ _NAME_TO_CHANNEL_TYPE = collections.OrderedDict((
 ))
 
 
-def _get_view(header, fullname):
+def get_view(header, fullname):
     if 'view' in header:
         return header['view']
     views = header.get('multiView')
@@ -64,10 +64,13 @@ def _get_view(header, fullname):
         # Default layer is put in default view
         return views[0]
     viewname = fullname.split('.', 1)[0]
+    viewname = viewname.encode('UTF-8')
     return viewname in views and viewname or views[0]
 
 
 def _get_layer(view, fullname):
+    if view is not None:
+        view = view.decode('UTF-8')
     layer_and_channel = fullname.rsplit('.', 1)
     layer = layer_and_channel[0]
     if len(layer_and_channel) < 2 or layer == view:
@@ -103,7 +106,7 @@ class EXRChannel:
         G, B, A or DATA.
         """
         self.fullname = fullname
-        self.view = _get_view(header, fullname)
+        self.view = get_view(header, fullname)
         self.layer = _get_layer(self.view, fullname)
         self.channel = fullname.rsplit('.', 1)[-1]
         self.channel_type = _get_channel_type(self.channel)
@@ -111,7 +114,12 @@ class EXRChannel:
 
 def output_file_name(channel):
     """Build name of output file for a given channel."""
-    components = '.'.join([x for x in (channel.view, channel.layer) if x is not None])
+    def as_string(sequence):
+        if isinstance(sequence, str):
+            return sequence
+        return sequence.decode('UTF-8')
+
+    components = '.'.join([as_string(x) for x in (channel.view, channel.layer) if x is not None])
     return components or 'default_layer'
 
 
