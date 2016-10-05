@@ -52,7 +52,7 @@ setup(
 
     setup_requires=['pytest-runner'],
 
-    tests_require=['flake8', 'mock', 'pytest', 'pytest-flake8', 'pytest-cov', 'pytest-xdist'],
+    tests_require=['flake8', 'mock', 'pytest', 'pytest-flake8', 'pytest-cov'],
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.
