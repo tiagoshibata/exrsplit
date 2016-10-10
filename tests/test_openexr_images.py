@@ -20,8 +20,8 @@ def image_path(dirpath, filename):
         return pytest.mark.skip('pythonopenexr crash in Python 3')  # investigate this segfault
     return os.path.join(dirpath, filename)
 
+openexr_images = []
 if has_submodule:
-    openexr_images = []
     for dirpath, _, filenames in os.walk(openexr_images_submodule):
         openexr_images.extend([image_path(dirpath, x) for x in filenames if x.endswith('.exr')])
 
