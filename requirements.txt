@@ -1,1 +1,16 @@
+apipkg==1.4
+coverage==4.2
+execnet==1.4.1
+flake8==3.0.4
+mccabe==0.5.2
+mock==2.0.0
 -e git+https://github.com/tiagoshibata/openexrpython.git@449dd1650e3bedeb4f025ef46692eba37284061d#egg=OpenEXR
+pbr==1.10.0
+py==1.4.31
+pycodestyle==2.0.0
+pyflakes==1.2.3
+pytest==3.0.3
+pytest-cov==2.3.1
+pytest-flake8==0.7
+pytest-xdist==1.15.0
+six==1.10.0

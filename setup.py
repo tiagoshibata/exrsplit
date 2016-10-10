@@ -7,6 +7,7 @@ from os import path
 with open(path.join(path.abspath(path.dirname(__file__)), 'README.rst')) as f:
     long_description = f.read()
 
+tests_require = ['flake8', 'mock', 'pytest', 'pytest-flake8', 'pytest-cov', 'pytest-xdist']
 setup(
     name='exrsplit',
 
@@ -48,11 +49,11 @@ setup(
     # dependencies). You can install these using the following syntax,
     # for example:
     # $ pip install -e .[dev,test]
-    extras_require={},
+    extras_require={'test': tests_require},
 
     setup_requires=['pytest-runner'],
 
-    tests_require=['flake8', 'mock', 'pytest', 'pytest-flake8', 'pytest-cov'],
+    tests_require=tests_require,
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.
