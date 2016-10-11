@@ -11,7 +11,8 @@ def _parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-m', '--merge', action='store_true', help='Merge multiple OpenEXR images')
     parser.add_argument('-s', '--split-channels', action='store_true', help='Create a file for each channel instead ' +
-                        'of per layer. Data channels are saved as grayscale images.')
+                        'of per layer. Data channels (eg. depth, shadows or mask) are saved as grayscale ' +
+                        'representations of their data.')
     parser.add_argument('--view', action='append',
                         help='Treat given prefix as a view instead of a layer. ' +
                         'First view is treated as the default view.')
@@ -59,8 +60,10 @@ def _exr_to_multilayer(merged_header, merged_data, filename):
         views = merged_header.get('view') or merged_header.get('multiView')
         if views:
             view = exrsplit.get_view(merged_header, layer)
-            if components[0] == view:
-                layer = layer.split('.', 1)[1]
+            if components[0].encode('UTF-8') == view:
+                if view == views[0]:  # first view is put in default view
+                    layer = layer.split('.', 1)
+                    layer = len(layer) > 1 and layer[1] or ''
             else:
                 print('{} first component is {}, which is not a valid view.'.format(filename, components[0]))
                 print('Putting in default view {}.'.format(views[0]))
@@ -84,16 +87,20 @@ def merge_exr(args):
     views = args.view or []
     if len(views) > 1:
         print('Using views {}'.format(', '.join(views)))
-        output_header['multiView'] = views
+        output_header['multiView'] = [x.encode('UTF-8') for x in views]
     elif len(views) == 1:
         print('Using view {}'.format(views[0]))
-        output_header['view'] = views[0]
+        output_header['view'] = views[0].encode('UTF-8')
 
     channel_data = {}
     for i, filename in enumerate(args.image[:-1]):
         print('{}/{} - Merging {}'.format(i + 1, len(args.image) - 1, filename))
         _exr_to_multilayer(output_header, channel_data, filename)
 
+    if 'multiView' in output_header:
+        # The OpenEXR Python bindings returns bytes when multiView information from a header
+        #  is read and expects strings when writing
+        output_header['multiView'] = [x.decode('UTF-8') for x in output_header['multiView']]
     output = OpenEXR.OutputFile(args.image[-1], output_header)
     try:
         output.writePixels(channel_data)

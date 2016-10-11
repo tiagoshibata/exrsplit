@@ -60,7 +60,7 @@ def get_view(header, fullname):
     views = header.get('multiView')
     if views is None:
         return None
-    if '.' not in fullname:
+    if '.' not in fullname and fullname.encode('UTF-8') not in views:
         # Default layer is put in default view
         return views[0]
     viewname = fullname.split('.', 1)[0]
