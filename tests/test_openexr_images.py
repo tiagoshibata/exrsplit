@@ -28,4 +28,10 @@ if has_submodule:
 
 @pytest.mark.parametrize('image', openexr_images)
 def test_split_image(image):
-    exrsplit_main.main(CmdArgs(png=False, split_channels=False, merge=False, image=[image]))
+    try:
+        exrsplit_main.main(CmdArgs(png=False, split_channels=False, merge=False, image=[image]))
+    except IOError as e:
+        if "The file format version number's flag field contains unrecognized flags" in str(e):
+            pytest.xfail('Long header and channel names not backwards compatible with libIlmImf<2.0')
+        else:
+            raise

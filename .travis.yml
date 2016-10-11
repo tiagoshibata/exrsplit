@@ -9,17 +9,14 @@ python:
   - "pypy"
 before_install:
   - pip install -U pip
-  - ./travis_before_install.sh
 install:
-  - pip install -r requirements.txt
+  - pip install -vr requirements.txt
 script: python setup.py test
-env:
-  global:
-    - CFLAGS=-I/tmp/include -I/tmp/include/OpenEXR
-    - LDFLAGS=-L/tmp/lib
-    - LD_LIBRARY_PATH=/tmp/lib
-    - LIBRARY_PATH=/tmp/lib
-    - PKG_CONFIG_PATH=/tmp/lib/pkgconfig
 sudo: false
 git:
   depth: 5
+addons:
+ apt:
+   packages:
+     - libopenexr-dev
+     - libopenexr6
