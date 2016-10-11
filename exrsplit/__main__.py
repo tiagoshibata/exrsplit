@@ -9,7 +9,6 @@ import sys
 def _parse_args():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--png', action='store_true', help='Convert output images to PNG')
     parser.add_argument('-m', '--merge', action='store_true', help='Merge multiple OpenEXR images')
     parser.add_argument('-s', '--split-channels', action='store_true', help='Create a file for each channel instead ' +
                         'of per layer. Data channels are saved as grayscale images.')

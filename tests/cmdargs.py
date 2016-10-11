@@ -1,3 +1,3 @@
 import collections
 
-CmdArgs = collections.namedtuple('CmdArgs', ['png', 'split_channels', 'merge', 'image'])
+CmdArgs = collections.namedtuple('CmdArgs', ['split_channels', 'merge', 'image'])
