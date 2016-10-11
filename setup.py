@@ -7,7 +7,7 @@ from os import path
 with open(path.join(path.abspath(path.dirname(__file__)), 'README.rst')) as f:
     long_description = f.read()
 
-tests_require = ['flake8', 'mock', 'pytest', 'pytest-flake8', 'pytest-cov', 'pytest-xdist']
+tests_require = ['flake8', 'mock', 'pytest', 'pytest-flake8', 'pytest-cov']
 setup(
     name='exrsplit',
 
