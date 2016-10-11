@@ -4,7 +4,6 @@ python:
   - "3.3"
   - "3.4"
   - "3.5"
-  - "nightly"
 before_install:
   - pip install -U pip
 install:
