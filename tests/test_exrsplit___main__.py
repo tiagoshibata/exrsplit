@@ -5,8 +5,8 @@ from cmdargs import CmdArgs
 
 
 @pytest.mark.parametrize('flags', [
-    (CmdArgs(split_channels=False, merge=True, image=['a', 'b'])),
-    (CmdArgs(split_channels=True, merge=True, image=['a', 'b', 'c'])),
+    (CmdArgs(split_channels=False, merge=True, prefix=False, list=False, layer=None, image=['a', 'b'])),
+    (CmdArgs(split_channels=True, merge=True, prefix=False, list=False, layer=None, image=['a', 'b', 'c'])),
 ])
 def test_incompatible_flags(flags):
     with pytest.raises(SystemExit):
@@ -32,7 +32,7 @@ def test_split_exr_layers(mock___open_inputfile, mock_OpenEXR_OutputFile):
     mock_exr = MagicMock()
     mock_exr.header = lambda: {'channels': {'R': {}, 'G': {}, 'car.R': {}}}
     mock___open_inputfile.side_effect = lambda x: mock_exr
-    args = CmdArgs(split_channels=False, merge=False, image=['test.exr'])
+    args = CmdArgs(split_channels=False, merge=False, prefix=False, list=False, layer=None, image=['test.exr'])
     exrsplit_main.split_exr(args)
 
     mock___open_inputfile.assert_called_once_with('test.exr')
