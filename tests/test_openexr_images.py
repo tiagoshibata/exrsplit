@@ -2,7 +2,6 @@ from cmdargs import CmdArgs
 import exrsplit.__main__ as exrsplit_main
 import os
 import pytest
-import sys
 
 # This file contains tests that are run against the openexr-images repository
 # (https://github.com/openexr/openexr-images.git).
@@ -16,8 +15,6 @@ elif not has_submodule:
 
 
 def image_path(dirpath, filename):
-    if sys.version_info >= (3, 0) and dirpath.endswith('ScanLines') and filename == 'Blobbies.exr':
-        return pytest.mark.skip('pythonopenexr crash in Python 3')  # investigate this segfault
     return os.path.join(dirpath, filename)
 
 

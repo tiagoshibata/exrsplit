@@ -4,7 +4,7 @@ execnet==1.4.1
 flake8==3.0.4
 mccabe==0.5.2
 mock==2.0.0
--e git+https://github.com/jamesbowman/openexrpython.git@a06cee54e47c9bea2c28c450cd4e09f81711e383#egg=OpenEXR
+-e git+https://github.com/jamesbowman/openexrpython.git@71439402d98c2d9ec4d87ea88ccd1792c6eaee22#egg=OpenEXR
 pbr==1.10.0
 py==1.4.31
 pycodestyle==2.0.0

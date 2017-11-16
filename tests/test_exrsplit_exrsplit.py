@@ -46,6 +46,7 @@ def test__get_layer(view, fullname, expected_layer):
 def test__get_channel_type(fullname, expected_channel_type):
     assert exrsplit._get_channel_type(fullname) == expected_channel_type
 
+
 ChannelData = collections.namedtuple('ChannelData', ['view', 'layer', 'channel', 'channel_type'])
 
 
