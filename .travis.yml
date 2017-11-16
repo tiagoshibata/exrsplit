@@ -14,4 +14,4 @@ addons:
  apt:
    packages:
      - libopenexr-dev
-     - libopenexr6
+     - libopenexr22
